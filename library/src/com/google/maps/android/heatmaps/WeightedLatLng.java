@@ -16,7 +16,7 @@
 
 package com.google.maps.android.heatmaps;
 
-import com.google.android.gms.maps.model.LatLng;
+import com.bmwmap.api.maps.model.LatLng;
 import com.google.maps.android.geometry.Point;
 import com.google.maps.android.projection.SphericalMercatorProjection;
 import com.google.maps.android.quadtree.PointQuadTree;
@@ -40,7 +40,7 @@ public class WeightedLatLng implements PointQuadTree.Item {
     private static final SphericalMercatorProjection sProjection =
             new SphericalMercatorProjection(HeatmapTileProvider.WORLD_WIDTH);
 
-    private Point mPoint;
+    private final Point mPoint;
 
     private double mIntensity;
 
@@ -57,8 +57,11 @@ public class WeightedLatLng implements PointQuadTree.Item {
      */
     public WeightedLatLng(LatLng latLng, double intensity) {
         mPoint = sProjection.toPoint(latLng);
-        if (intensity >= 0) mIntensity = intensity;
-        else mIntensity = DEFAULT_INTENSITY;
+        if (intensity >= 0) {
+            mIntensity = intensity;
+        } else {
+            mIntensity = DEFAULT_INTENSITY;
+        }
     }
 
     /**
@@ -70,6 +73,7 @@ public class WeightedLatLng implements PointQuadTree.Item {
         this(latLng, DEFAULT_INTENSITY);
     }
 
+    @Override
     public Point getPoint() {
         return mPoint;
     }

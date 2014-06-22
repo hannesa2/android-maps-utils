@@ -1,10 +1,11 @@
+
 package com.google.maps.android;
 
 import android.view.View;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.bmwmap.api.maps.BMWMap;
+import com.bmwmap.api.maps.model.Marker;
+import com.bmwmap.api.maps.model.MarkerOptions;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,13 +20,14 @@ import java.util.Set;
  * All marker operations (adds and removes) should occur via its collection class. That is, don't
  * add a marker via a collection, then remove it via Marker.remove()
  */
-public class MarkerManager implements GoogleMap.OnInfoWindowClickListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnMarkerDragListener, GoogleMap.InfoWindowAdapter {
-    private final GoogleMap mMap;
+public class MarkerManager implements BMWMap.OnInfoWindowClickListener, BMWMap.OnMarkerClickListener,
+        BMWMap.OnMarkerDragListener, BMWMap.InfoWindowAdapter {
+    private final BMWMap mMap;
 
     private final Map<String, Collection> mNamedCollections = new HashMap<String, Collection>();
     private final Map<Marker, Collection> mAllMarkers = new HashMap<Marker, Collection>();
 
-    public MarkerManager(GoogleMap map) {
+    public MarkerManager(BMWMap map) {
         this.mMap = map;
     }
 
@@ -35,6 +37,7 @@ public class MarkerManager implements GoogleMap.OnInfoWindowClickListener, Googl
 
     /**
      * Create a new named collection, which can later be looked up by {@link #getCollection(String)}
+     * 
      * @param id a unique id for this collection.
      */
     public Collection newCollection(String id) {
@@ -48,6 +51,7 @@ public class MarkerManager implements GoogleMap.OnInfoWindowClickListener, Googl
 
     /**
      * Gets a named collection that was created by {@link #newCollection(String)}
+     * 
      * @param id the unique id for this collection.
      */
     public Collection getCollection(String id) {
@@ -126,13 +130,12 @@ public class MarkerManager implements GoogleMap.OnInfoWindowClickListener, Googl
 
     public class Collection {
         private final Set<Marker> mMarkers = new HashSet<Marker>();
-        private GoogleMap.OnInfoWindowClickListener mInfoWindowClickListener;
-        private GoogleMap.OnMarkerClickListener mMarkerClickListener;
-        private GoogleMap.OnMarkerDragListener mMarkerDragListener;
-        private GoogleMap.InfoWindowAdapter mInfoWindowAdapter;
+        private BMWMap.OnInfoWindowClickListener mInfoWindowClickListener;
+        private BMWMap.OnMarkerClickListener mMarkerClickListener;
+        private BMWMap.OnMarkerDragListener mMarkerDragListener;
+        private BMWMap.InfoWindowAdapter mInfoWindowAdapter;
 
-        public Collection() {
-        }
+        public Collection() {}
 
         public Marker addMarker(MarkerOptions opts) {
             Marker marker = mMap.addMarker(opts);
@@ -162,19 +165,19 @@ public class MarkerManager implements GoogleMap.OnInfoWindowClickListener, Googl
             return Collections.unmodifiableCollection(mMarkers);
         }
 
-        public void setOnInfoWindowClickListener(GoogleMap.OnInfoWindowClickListener infoWindowClickListener) {
+        public void setOnInfoWindowClickListener(BMWMap.OnInfoWindowClickListener infoWindowClickListener) {
             mInfoWindowClickListener = infoWindowClickListener;
         }
 
-        public void setOnMarkerClickListener(GoogleMap.OnMarkerClickListener markerClickListener) {
+        public void setOnMarkerClickListener(BMWMap.OnMarkerClickListener markerClickListener) {
             mMarkerClickListener = markerClickListener;
         }
 
-        public void setOnMarkerDragListener(GoogleMap.OnMarkerDragListener markerDragListener) {
+        public void setOnMarkerDragListener(BMWMap.OnMarkerDragListener markerDragListener) {
             mMarkerDragListener = markerDragListener;
         }
 
-        public void setOnInfoWindowAdapter(GoogleMap.InfoWindowAdapter infoWindowAdapter) {
+        public void setOnInfoWindowAdapter(BMWMap.InfoWindowAdapter infoWindowAdapter) {
             mInfoWindowAdapter = infoWindowAdapter;
         }
     }
