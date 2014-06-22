@@ -21,14 +21,14 @@ import android.util.SparseArray;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.Projection;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.bmwmap.api.maps.BMWMap;
+import com.bmwmap.api.maps.Projection;
+import com.bmwmap.api.maps.model.BitmapDescriptor;
+import com.bmwmap.api.maps.model.BitmapDescriptorFactory;
+import com.bmwmap.api.maps.model.LatLng;
+import com.bmwmap.api.maps.model.LatLngBounds;
+import com.bmwmap.api.maps.model.Marker;
+import com.bmwmap.api.maps.model.MarkerOptions;
 import com.google.maps.android.MarkerManager;
 import com.google.maps.android.R;
 import com.google.maps.android.clustering.Cluster;
@@ -36,8 +36,8 @@ import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.geometry.Point;
 import com.google.maps.android.projection.SphericalMercatorProjection;
-import com.google.maps.android.ui.SquareTextView;
 import com.google.maps.android.ui.IconGenerator;
+import com.google.maps.android.ui.SquareTextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,14 +52,12 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static com.google.maps.android.clustering.algo.NonHierarchicalDistanceBasedAlgorithm.MAX_DISTANCE_AT_ZOOM;
-
 /**
  * The default view for a ClusterManager. Markers are animated in and out of clusters.
  */
 public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRenderer<T> {
     private static final boolean SHOULD_ANIMATE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
-    private final GoogleMap mMap;
+    private final BMWMap mMap;
     private final IconGenerator mIconGenerator;
     private final ClusterManager<T> mClusterManager;
     private final float mDensity;
@@ -76,12 +74,12 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
     /**
      * Icons for each bucket.
      */
-    private SparseArray<BitmapDescriptor> mIcons = new SparseArray<BitmapDescriptor>();
+    private final SparseArray<BitmapDescriptor> mIcons = new SparseArray<BitmapDescriptor>();
 
     /**
      * Markers for single ClusterItems.
      */
-    private MarkerCache<T> mMarkerCache = new MarkerCache<T>();
+    private final MarkerCache<T> mMarkerCache = new MarkerCache<T>();
 
     /**
      * If cluster size is less than this size, display individual markers.
@@ -111,7 +109,7 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
     private ClusterManager.OnClusterItemClickListener<T> mItemClickListener;
     private ClusterManager.OnClusterItemInfoWindowClickListener<T> mItemInfoWindowClickListener;
 
-    public DefaultClusterRenderer(Context context, GoogleMap map, ClusterManager<T> clusterManager) {
+    public DefaultClusterRenderer(Context context, BMWMap map, ClusterManager<T> clusterManager) {
         mMap = map;
         mDensity = context.getResources().getDisplayMetrics().density;
         mIconGenerator = new IconGenerator(context);
@@ -123,14 +121,14 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
 
     @Override
     public void onAdd() {
-        mClusterManager.getMarkerCollection().setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+        mClusterManager.getMarkerCollection().setOnMarkerClickListener(new BMWMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 return mItemClickListener != null && mItemClickListener.onClusterItemClick(mMarkerCache.get(marker));
             }
         });
 
-        mClusterManager.getMarkerCollection().setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+        mClusterManager.getMarkerCollection().setOnInfoWindowClickListener(new BMWMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
                 if (mItemInfoWindowClickListener != null) {
@@ -139,14 +137,14 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
             }
         });
 
-        mClusterManager.getClusterMarkerCollection().setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+        mClusterManager.getClusterMarkerCollection().setOnMarkerClickListener(new BMWMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 return mClickListener != null && mClickListener.onClusterClick(mMarkerToCluster.get(marker));
             }
         });
 
-        mClusterManager.getClusterMarkerCollection().setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+        mClusterManager.getClusterMarkerCollection().setOnInfoWindowClickListener(new BMWMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
                 if (mInfoWindowClickListener != null) {
@@ -166,7 +164,7 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
         mColoredCircleBackground = new ShapeDrawable(new OvalShape());
         ShapeDrawable outline = new ShapeDrawable(new OvalShape());
         outline.getPaint().setColor(0x80ffffff); // Transparent white.
-        LayerDrawable background = new LayerDrawable(new Drawable[]{outline, mColoredCircleBackground});
+        LayerDrawable background = new LayerDrawable(new Drawable[] { outline, mColoredCircleBackground });
         int strokeWidth = (int) (mDensity * 3);
         background.setLayerInset(1, strokeWidth, strokeWidth, strokeWidth, strokeWidth);
         return background;
@@ -330,6 +328,7 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
             this.mSphericalMercatorProjection = new SphericalMercatorProjection(256 * Math.pow(2, Math.min(zoom, mZoom)));
         }
 
+        @Override
         @SuppressLint("NewApi")
         public void run() {
             if (clusters.equals(DefaultClusterRenderer.this.mClusters)) {
@@ -458,7 +457,9 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
     }
 
     private static Point findClosestCluster(List<Point> markers, Point point) {
-        if (markers == null || markers.isEmpty()) return null;
+        if (markers == null || markers.isEmpty()) {
+            return null;
+        }
 
         // TODO: make this configurable.
         double minDistSquared = MAX_DISTANCE_AT_ZOOM * MAX_DISTANCE_AT_ZOOM;
@@ -485,11 +486,11 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
         private final Lock lock = new ReentrantLock();
         private final Condition busyCondition = lock.newCondition();
 
-        private Queue<CreateMarkerTask> mCreateMarkerTasks = new LinkedList<CreateMarkerTask>();
-        private Queue<CreateMarkerTask> mOnScreenCreateMarkerTasks = new LinkedList<CreateMarkerTask>();
-        private Queue<Marker> mRemoveMarkerTasks = new LinkedList<Marker>();
-        private Queue<Marker> mOnScreenRemoveMarkerTasks = new LinkedList<Marker>();
-        private Queue<AnimationTask> mAnimationTasks = new LinkedList<AnimationTask>();
+        private final Queue<CreateMarkerTask> mCreateMarkerTasks = new LinkedList<CreateMarkerTask>();
+        private final Queue<CreateMarkerTask> mOnScreenCreateMarkerTasks = new LinkedList<CreateMarkerTask>();
+        private final Queue<Marker> mRemoveMarkerTasks = new LinkedList<Marker>();
+        private final Queue<Marker> mOnScreenRemoveMarkerTasks = new LinkedList<Marker>();
+        private final Queue<AnimationTask> mAnimationTasks = new LinkedList<AnimationTask>();
 
         /**
          * Whether the idle listener has been added to the UI thread's MessageQueue.

@@ -16,13 +16,29 @@
 
 package com.google.maps.android;
 
-import com.google.android.gms.maps.model.LatLng;
+import static com.google.maps.android.MathUtil.EARTH_RADIUS;
+import static com.google.maps.android.MathUtil.clamp;
+import static com.google.maps.android.MathUtil.hav;
+import static com.google.maps.android.MathUtil.havDistance;
+import static com.google.maps.android.MathUtil.havFromSin;
+import static com.google.maps.android.MathUtil.inverseMercator;
+import static com.google.maps.android.MathUtil.mercator;
+import static com.google.maps.android.MathUtil.sinFromHav;
+import static com.google.maps.android.MathUtil.sinSumFromHav;
+import static com.google.maps.android.MathUtil.wrap;
+import static java.lang.Math.PI;
+import static java.lang.Math.cos;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static java.lang.Math.sin;
+import static java.lang.Math.sqrt;
+import static java.lang.Math.tan;
+import static java.lang.Math.toRadians;
 
-import java.util.List;
+import com.bmwmap.api.maps.model.LatLng;
+
 import java.util.ArrayList;
-
-import static java.lang.Math.*;
-import static com.google.maps.android.MathUtil.*;
+import java.util.List;
 
 public class PolyUtil {
 
@@ -55,11 +71,11 @@ public class PolyUtil {
             return false;
         }
         // Point is South Pole.
-        if (lat3 <= -PI/2) {
+        if (lat3 <= -PI / 2) {
             return false;
         }
         // Any segment end is a pole.
-        if (lat1 <= -PI/2 || lat2 <= -PI/2 || lat1 >= PI/2 || lat2 >= PI/2) {
+        if (lat1 <= -PI / 2 || lat2 <= -PI / 2 || lat1 >= PI / 2 || lat2 >= PI / 2) {
             return false;
         }
         if (lng2 <= -PI) {
@@ -75,7 +91,7 @@ public class PolyUtil {
             return true;
         }
         // North Pole.
-        if (lat3 >= PI/2) {
+        if (lat3 >= PI / 2) {
             return true;
         }
         // Compare lat3 with latitude on the GC/Rhumb segment corresponding to lng3.
@@ -136,8 +152,7 @@ public class PolyUtil {
     }
 
     /**
-     * Same as {@link #isLocationOnEdge(LatLng, List, boolean, double)}
-     * with a default tolerance of 0.1 meters.
+     * Same as {@link #isLocationOnEdge(LatLng, List, boolean, double)} with a default tolerance of 0.1 meters.
      */
     public static boolean isLocationOnEdge(LatLng point, List<LatLng> polygon, boolean geodesic) {
         return isLocationOnEdge(point, polygon, geodesic, DEFAULT_TOLERANCE);
@@ -155,9 +170,7 @@ public class PolyUtil {
     }
 
     /**
-     * Same as {@link #isLocationOnPath(LatLng, List, boolean, double)}
-     *
-     * with a default tolerance of 0.1 meters.
+     * Same as {@link #isLocationOnPath(LatLng, List, boolean, double)} with a default tolerance of 0.1 meters.
      */
     public static boolean isLocationOnPath(LatLng point, List<LatLng> polyline,
                                            boolean geodesic) {

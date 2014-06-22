@@ -1,12 +1,13 @@
+
 package com.google.maps.android.clustering;
 
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.Marker;
+import com.bmwmap.api.maps.BMWMap;
+import com.bmwmap.api.maps.model.CameraPosition;
+import com.bmwmap.api.maps.model.Marker;
 import com.google.maps.android.MarkerManager;
 import com.google.maps.android.clustering.algo.Algorithm;
 import com.google.maps.android.clustering.algo.NonHierarchicalDistanceBasedAlgorithm;
@@ -22,10 +23,14 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * Groups many items on a map based on zoom level.
  * <p/>
- * ClusterManager should be added to the map as an: <ul> <li>{@link com.google.android.gms.maps.GoogleMap.OnCameraChangeListener}</li>
- * <li>{@link com.google.android.gms.maps.GoogleMap.OnMarkerClickListener}</li> </ul>
+ * ClusterManager should be added to the map as an:
+ * <ul>
+ * <li>{@link com.google.android.gms.maps.GoogleMap.OnCameraChangeListener}</li>
+ * <li>{@link com.google.android.gms.maps.GoogleMap.OnMarkerClickListener}</li>
+ * </ul>
  */
-public class ClusterManager<T extends ClusterItem> implements GoogleMap.OnCameraChangeListener, GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
+public class ClusterManager<T extends ClusterItem> implements BMWMap.OnCameraChangeListener, BMWMap.OnMarkerClickListener,
+        BMWMap.OnInfoWindowClickListener {
     private final MarkerManager mMarkerManager;
     private final MarkerManager.Collection mMarkers;
     private final MarkerManager.Collection mClusterMarkers;
@@ -34,7 +39,7 @@ public class ClusterManager<T extends ClusterItem> implements GoogleMap.OnCamera
     private final ReadWriteLock mAlgorithmLock = new ReentrantReadWriteLock();
     private ClusterRenderer<T> mRenderer;
 
-    private GoogleMap mMap;
+    private BMWMap mMap;
     private CameraPosition mPreviousCameraPosition;
     private ClusterTask mClusterTask;
     private final ReadWriteLock mClusterTaskLock = new ReentrantReadWriteLock();
@@ -44,11 +49,11 @@ public class ClusterManager<T extends ClusterItem> implements GoogleMap.OnCamera
     private OnClusterItemInfoWindowClickListener<T> mOnClusterItemInfoWindowClickListener;
     private OnClusterClickListener<T> mOnClusterClickListener;
 
-    public ClusterManager(Context context, GoogleMap map) {
+    public ClusterManager(Context context, BMWMap map) {
         this(context, map, new MarkerManager(map));
     }
 
-    public ClusterManager(Context context, GoogleMap map, MarkerManager markerManager) {
+    public ClusterManager(Context context, BMWMap map, MarkerManager markerManager) {
         mMap = map;
         mMarkerManager = markerManager;
         mClusterMarkers = markerManager.newCollection();
@@ -162,8 +167,8 @@ public class ClusterManager<T extends ClusterItem> implements GoogleMap.OnCamera
      */
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
-        if (mRenderer instanceof GoogleMap.OnCameraChangeListener) {
-            ((GoogleMap.OnCameraChangeListener) mRenderer).onCameraChange(cameraPosition);
+        if (mRenderer instanceof BMWMap.OnCameraChangeListener) {
+            ((BMWMap.OnCameraChangeListener) mRenderer).onCameraChange(cameraPosition);
         }
 
         // Don't re-compute clusters if the map has just been panned/tilted/rotated.

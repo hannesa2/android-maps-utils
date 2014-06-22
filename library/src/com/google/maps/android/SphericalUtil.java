@@ -16,12 +16,23 @@
 
 package com.google.maps.android;
 
-import com.google.android.gms.maps.model.LatLng;
+import static com.google.maps.android.MathUtil.EARTH_RADIUS;
+import static com.google.maps.android.MathUtil.arcHav;
+import static com.google.maps.android.MathUtil.havDistance;
+import static java.lang.Math.PI;
+import static java.lang.Math.abs;
+import static java.lang.Math.asin;
+import static java.lang.Math.atan2;
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+import static java.lang.Math.sqrt;
+import static java.lang.Math.tan;
+import static java.lang.Math.toDegrees;
+import static java.lang.Math.toRadians;
+
+import com.bmwmap.api.maps.model.LatLng;
 
 import java.util.List;
-
-import static java.lang.Math.*;
-import static com.google.maps.android.MathUtil.*;
 
 public class SphericalUtil {
 
@@ -249,5 +260,26 @@ public class SphericalUtil {
         double deltaLng = lng1 - lng2;
         double t = tan1 * tan2;
         return 2 * atan2(t * sin(deltaLng), 1 + t * cos(deltaLng));
+    }
+    
+    /**
+     * Wraps the given value into the inclusive-exclusive interval between min and max.
+     * 
+     * @param n The value to wrap.
+     * @param min The minimum.
+     * @param max The maximum.
+     */
+    static double wrap(double n, double min, double max) {
+        return (n >= min && n < max) ? n : (mod(n - min, max - min) + min);
+    }
+
+    /**
+     * Returns the non-negative remainder of x / m.
+     * 
+     * @param x The operand.
+     * @param m The modulus.
+     */
+    static double mod(double x, double m) {
+        return ((x % m) + m) % m;
     }
 }

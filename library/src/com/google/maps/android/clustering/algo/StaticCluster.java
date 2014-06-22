@@ -1,6 +1,7 @@
+
 package com.google.maps.android.clustering.algo;
 
-import com.google.android.gms.maps.model.LatLng;
+import com.bmwmap.api.maps.model.LatLng;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterItem;
 
