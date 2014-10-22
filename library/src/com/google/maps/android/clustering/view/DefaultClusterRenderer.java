@@ -84,6 +84,10 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
      */
     private final MarkerCache<T> mMarkerCache = new MarkerCache<T>();
 
+    public T getMarker(Marker m) {
+        return mMarkerCache.get(m);
+    }
+
     /**
      * If cluster size is less than this size, display individual markers.
      */
