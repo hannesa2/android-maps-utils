@@ -12,4 +12,8 @@ public interface ClusterItem {
      * The position of this marker. This must always return the same value.
      */
     LatLng getPosition();
+
+    float anchorU();
+
+    float anchorV();
 }
