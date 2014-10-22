@@ -104,6 +104,10 @@ public class ClusterManager<T extends ClusterItem> implements BMWMap.OnCameraCha
         cluster();
     }
 
+    public Collection<T> getAlgorithmItems() {
+        return mAlgorithm.getItems();
+    }
+
     public void clearItems() {
         mAlgorithmLock.writeLock().lock();
         try {
