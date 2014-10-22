@@ -162,7 +162,7 @@ public class ClusterManager<T extends ClusterItem> implements BMWMap.OnCameraCha
 
     /**
      * Might re-cluster.
-     *
+     * 
      * @param cameraPosition
      */
     @Override

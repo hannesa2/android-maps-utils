@@ -1,4 +1,7 @@
+
 package com.google.maps.android.clustering.view;
+
+import static com.google.maps.android.clustering.algo.NonHierarchicalDistanceBasedAlgorithm.MAX_DISTANCE_AT_ZOOM;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -41,13 +44,13 @@ import com.google.maps.android.ui.SquareTextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -62,7 +65,7 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
     private final ClusterManager<T> mClusterManager;
     private final float mDensity;
 
-    private static final int[] BUCKETS = {10, 20, 50, 100, 200, 500, 1000};
+    private static final int[] BUCKETS = { 10, 20, 50, 100, 200, 500, 1000 };
     private ShapeDrawable mColoredCircleBackground;
 
     /**
@@ -94,8 +97,8 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
     /**
      * Lookup between markers and the associated cluster.
      */
-    private Map<Marker, Cluster<T>> mMarkerToCluster = new HashMap<Marker, Cluster<T>>();
-    private Map<Cluster<T>, Marker> mClusterToMarker = new HashMap<Cluster<T>, Marker>();
+    private final Map<Marker, Cluster<T>> mMarkerToCluster = new HashMap<Marker, Cluster<T>>();
+    private final Map<Cluster<T>, Marker> mClusterToMarker = new HashMap<Cluster<T>, Marker>();
 
     /**
      * The target zoom level for the current set of clusters.
@@ -172,7 +175,8 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
 
     private SquareTextView makeSquareTextView(Context context) {
         SquareTextView squareTextView = new SquareTextView(context);
-        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
         squareTextView.setLayoutParams(layoutParams);
         squareTextView.setId(R.id.text);
         int twelveDpi = (int) (12 * mDensity);
@@ -185,7 +189,7 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
         final float sizeRange = 300;
         final float size = Math.min(clusterSize, sizeRange);
         final float hue = (sizeRange - size) * (sizeRange - size) / (sizeRange * sizeRange) * hueRange;
-        return Color.HSVToColor(new float[]{
+        return Color.HSVToColor(new float[] {
                 hue, 1f, .6f
         });
     }
@@ -285,8 +289,8 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
      * Transforms the current view (represented by DefaultClusterRenderer.mClusters and DefaultClusterRenderer.mZoom) to a
      * new zoom level and set of clusters.
      * <p/>
-     * This must be run off the UI thread. Work is coordinated in the RenderTask, then queued up to
-     * be executed by a MarkerModifier.
+     * This must be run off the UI thread. Work is coordinated in the RenderTask, then queued up to be executed by a
+     * MarkerModifier.
      * <p/>
      * There are three stages for the render:
      * <p/>
@@ -296,8 +300,8 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
      * <p/>
      * 3. Any old markers are removed from the map
      * <p/>
-     * When zooming in, markers are animated out from the nearest existing cluster. When zooming
-     * out, existing clusters are animated to the nearest new cluster.
+     * When zooming in, markers are animated out from the nearest existing cluster. When zooming out, existing clusters are
+     * animated to the nearest new cluster.
      */
     private class RenderTask implements Runnable {
         final Set<? extends Cluster<T>> clusters;
@@ -312,7 +316,7 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
 
         /**
          * A callback to be run when all work has been completed.
-         *
+         * 
          * @param callback
          */
         public void setCallback(Runnable callback) {
@@ -503,7 +507,7 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
 
         /**
          * Creates markers for a cluster some time in the future.
-         *
+         * 
          * @param priority whether this operation should have priority.
          */
         public void add(boolean priority, CreateMarkerTask c) {
@@ -519,9 +523,9 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
 
         /**
          * Removes a markerWithPosition some time in the future.
-         *
+         * 
          * @param priority whether this operation should have priority.
-         * @param m        the markerWithPosition to remove.
+         * @param m the markerWithPosition to remove.
          */
         public void remove(boolean priority, Marker m) {
             lock.lock();
@@ -536,10 +540,10 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
 
         /**
          * Animates a markerWithPosition some time in the future.
-         *
+         * 
          * @param marker the markerWithPosition to animate.
-         * @param from   the position to animate from.
-         * @param to     the position to animate to.
+         * @param from the position to animate from.
+         * @param to the position to animate to.
          */
         public void animate(MarkerWithPosition marker, LatLng from, LatLng to) {
             lock.lock();
@@ -550,10 +554,10 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
         /**
          * Animates a markerWithPosition some time in the future, and removes it when the animation
          * is complete.
-         *
+         * 
          * @param marker the markerWithPosition to animate.
-         * @param from   the position to animate from.
-         * @param to     the position to animate to.
+         * @param from the position to animate from.
+         * @param to the position to animate to.
          */
         public void animateThenRemove(MarkerWithPosition marker, LatLng from, LatLng to) {
             lock.lock();
@@ -629,9 +633,7 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
             try {
                 lock.lock();
                 return !(mCreateMarkerTasks.isEmpty() && mOnScreenCreateMarkerTasks.isEmpty() &&
-                        mOnScreenRemoveMarkerTasks.isEmpty() && mRemoveMarkerTasks.isEmpty() &&
-                        mAnimationTasks.isEmpty()
-                );
+                        mOnScreenRemoveMarkerTasks.isEmpty() && mRemoveMarkerTasks.isEmpty() && mAnimationTasks.isEmpty());
             } finally {
                 lock.unlock();
             }
@@ -671,8 +673,8 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
      * A cache of markers representing individual ClusterItems.
      */
     private static class MarkerCache<T> {
-        private Map<T, Marker> mCache = new HashMap<T, Marker>();
-        private Map<Marker, T> mCacheReverse = new HashMap<Marker, T>();
+        private final Map<T, Marker> mCache = new HashMap<T, Marker>();
+        private final Map<Marker, T> mCacheReverse = new HashMap<Marker, T>();
 
         public Marker get(T item) {
             return mCache.get(item);
@@ -697,8 +699,7 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
     /**
      * Called before the marker for a ClusterItem is added to the map.
      */
-    protected void onBeforeClusterItemRendered(T item, MarkerOptions markerOptions) {
-    }
+    protected void onBeforeClusterItemRendered(T item, MarkerOptions markerOptions) {}
 
     /**
      * Called before the marker for a Cluster is added to the map.
@@ -719,26 +720,26 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
     /**
      * Called after the marker for a Cluster has been added to the map.
      */
-    protected void onClusterRendered(Cluster<T> cluster, Marker marker) {
-    }
+    protected void onClusterRendered(Cluster<T> cluster, Marker marker) {}
 
     /**
      * Called after the marker for a ClusterItem has been added to the map.
      */
-    protected void onClusterItemRendered(T clusterItem, Marker marker) {
-    }
-    
+    protected void onClusterItemRendered(T clusterItem, Marker marker) {}
+
     /**
      * Get the marker from a ClusterItem
+     * 
      * @param clusterItem ClusterItem which you will obtain its marker
      * @return a marker from a ClusterItem or null if it does not exists
      */
-    public Marker getMarker(T  clusterItem) {
+    public Marker getMarker(T clusterItem) {
         return mMarkerCache.get(clusterItem);
     }
 
     /**
      * Get the ClusterItem from a marker
+     * 
      * @param marker which you will obtain its ClusterItem
      * @return a ClusterItem from a marker or null if it does not exists
      */
@@ -748,15 +749,17 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
 
     /**
      * Get the marker from a Cluster
+     * 
      * @param cluster which you will obtain its marker
      * @return a marker from a cluster or null if it does not exists
      */
-    public Marker getMarker(Cluster<T>  cluster) {
+    public Marker getMarker(Cluster<T> cluster) {
         return mClusterToMarker.get(cluster);
     }
 
     /**
      * Get the Cluster from a marker
+     * 
      * @param marker which you will obtain its Cluster
      * @return a Cluster from a marker or null if it does not exists
      */
@@ -773,10 +776,10 @@ public class DefaultClusterRenderer<T extends ClusterItem> implements ClusterRen
         private final LatLng animateFrom;
 
         /**
-         * @param c            the cluster to render.
+         * @param c the cluster to render.
          * @param markersAdded a collection of markers to append any created markers.
-         * @param animateFrom  the location to animate the markerWithPosition from, or null if no
-         *                     animation is required.
+         * @param animateFrom the location to animate the markerWithPosition from, or null if no
+         *            animation is required.
          */
         public CreateMarkerTask(Cluster<T> c, Set<MarkerWithPosition> markersAdded, LatLng animateFrom) {
             this.cluster = c;
